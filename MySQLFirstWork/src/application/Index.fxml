@@ -18,6 +18,7 @@
             <TextArea fx:id="taResults" layoutX="45.0" layoutY="199.0" prefHeight="287.0" prefWidth="407.0" />
             <TextField fx:id="tfSearch" layoutX="45.0" layoutY="162.0" prefHeight="25.0" prefWidth="203.0" promptText="Type " />
             <Button fx:id="btSearch" layoutX="263.0" layoutY="162.0" mnemonicParsing="false" text="Search" />
+            <Button fx:id="btConnectMoviesActor" layoutX="356.0" layoutY="162.0" mnemonicParsing="false" onAction="#connect" text="Connect Movie-Actor" />
          </children>
       </Pane>
    </top>
