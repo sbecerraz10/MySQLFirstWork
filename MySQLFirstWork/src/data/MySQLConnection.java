@@ -191,16 +191,26 @@ public class MySQLConnection {
 	public String searchMovies(String data) {
 		String result = "MOVIES \n";
 		
-		String sql = "SELECT name FROM $TABLE WHERE movies.name LIKE '$name%'";
+		String sql = "SELECT name,id FROM $TABLE WHERE movies.name LIKE '$name%'";
 		sql = sql.replace("$TABLE", TABLE_MOVIES);
 		sql = sql.replace("$name", data);
 		
 		try {
 			ResultSet resultados = statement.executeQuery(sql);
-			
+			ArrayList<Movie> movies = new ArrayList<Movie>();
 			while(resultados.next()) {
-				result += resultados.getString(1) + "\n";
-				
+				//result += resultados.getString(1) + "\n";
+				movies.add(new Movie(resultados.getInt(2),resultados.getString(1)));
+			}
+			
+			resultados.close();
+			
+			for (int i = 0; i < movies.size(); i++) {
+				ArrayList<Actor> myactors = searchMyActors(movies.get(i).getId());
+				result += movies.get(i).getName() + "\n";
+				for (int j = 0; j < myactors.size(); j++) {
+					result += "  " + myactors.get(j).getName() + "\n";
+				}
 			}
 			
 			
@@ -212,19 +222,73 @@ public class MySQLConnection {
 		return result;
 	}
 	
+	private ArrayList<Actor> searchMyActors(int movieid) {
+		// TODO Auto-generated method stub
+		ArrayList<Actor> actorsFull = null;
+		String sql = "SELECT actorID FROM $TABLE WHERE $movieID = $vmovieID ;";
+		sql = sql.replace("$TABLE", TABLE_ACTORS_MOVIES);
+		sql = sql.replace("$movieID", MOVIE_ID);		
+		sql = sql.replace("$vmovieID", movieid + "");
+		
+		try {
+			ResultSet resultados = statement.executeQuery(sql);
+			ArrayList<Integer> actors = new ArrayList<Integer>();
+			while(resultados.next()) {
+				actors.add(resultados.getInt(1));
+			}
+			
+			resultados.close();
+			
+			 actorsFull = new ArrayList<Actor>();
+			
+			
+			for (int i = 0; i < actors.size(); i++) {
+				
+				String sql2 = "SELECT name FROM $TABLE WHERE $actorID = $vactorID";
+				sql2 = sql2.replace("$TABLE", TABLE_ACTORS);
+				sql2 = sql2.replace("$actorID", ACTORS_ID);		
+				sql2 = sql2.replace("$vactorID", actors.get(i) + "");
+				ResultSet resultados1 = statement.executeQuery(sql2);
+				while(resultados1.next()) {
+					actorsFull.add(new Actor(actors.get(i),resultados1.getString(1)));
+				}
+				resultados1.close();
+				
+				
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return actorsFull;
+	}
+
 	public String searchActors(String data) {
 		String result = "ACTORS \n";
 		
-		String sql = "SELECT name FROM $TABLE WHERE actors.name LIKE '$name%'";
+		String sql = "SELECT name,id FROM $TABLE WHERE actors.name LIKE '$name%'";
 		sql = sql.replace("$TABLE", TABLE_ACTORS);
 		sql = sql.replace("$name", data);
 		
 		try {
 			ResultSet resultados = statement.executeQuery(sql);
-			
+			ArrayList<Actor> actors = new ArrayList<Actor>();
 			while(resultados.next()) {
-				result += resultados.getString(1) + "\n";
-				
+			//result += resultados.getString(1) + "\n";
+				actors.add(new Actor(resultados.getInt(2),resultados.getString(1)));
+			}
+			
+			resultados.close();
+			
+			for (int i = 0; i < actors.size(); i++) {
+				ArrayList<Movie> mymovies = searchMyMovies(actors.get(i).getId());
+				result += actors.get(i).getName() + "\n";
+				for (int j = 0; j < mymovies.size(); j++) {
+					result += "  " + mymovies.get(j).getName() + "\n";
+				}
 			}
 			
 			
@@ -254,6 +318,53 @@ public class MySQLConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	
+	private ArrayList<Movie> searchMyMovies(int actorid) {
+		
+		String result = "";
+		ArrayList<Movie> moviesFull = null;
+		String sql = "SELECT movieID FROM $TABLE WHERE $actorID = $vactorID ;";
+		sql = sql.replace("$TABLE", TABLE_ACTORS_MOVIES);
+		sql = sql.replace("$actorID", ACTOR_ID);		
+		sql = sql.replace("$vactorID", actorid + "");
+		
+		try {
+			ResultSet resultados = statement.executeQuery(sql);
+			ArrayList<Integer> movies = new ArrayList<Integer>();
+			while(resultados.next()) {
+				movies.add(resultados.getInt(1));
+			}
+			
+			resultados.close();
+			
+			 moviesFull = new ArrayList<Movie>();
+			
+			
+			for (int i = 0; i < movies.size(); i++) {
+				
+				String sql2 = "SELECT name FROM $TABLE WHERE $movieID = $vmovieID";
+				sql2 = sql2.replace("$TABLE", TABLE_MOVIES);
+				sql2 = sql2.replace("$movieID", MOVIES_ID);		
+				sql2 = sql2.replace("$vmovieID", movies.get(i) + "");
+				ResultSet resultados1 = statement.executeQuery(sql2);
+				while(resultados1.next()) {
+					moviesFull.add(new Movie(movies.get(i),resultados1.getString(1)));
+				}
+				resultados1.close();
+				
+				
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return moviesFull;
+		
 	}
 	
 	

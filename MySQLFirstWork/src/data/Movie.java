@@ -1,11 +1,14 @@
 package data;
 
+import java.util.ArrayList;
+
 public class Movie {
 	
 	private int id;
 	private String name;
 	private int year;
 	private int genreID;
+	private ArrayList<Actor> actors;
 	
 	
 	public Movie(int id, String name, int year, int genreID) {
@@ -14,6 +17,7 @@ public class Movie {
 		this.name = name;
 		this.year = year;
 		this.genreID = genreID;
+		actors = new ArrayList<Actor>();
 	}
 	
 	public Movie(String name, int year, int genreID) {
@@ -21,6 +25,14 @@ public class Movie {
 		this.name = name;
 		this.year = year;
 		this.genreID = genreID;
+		actors = new ArrayList<Actor>();
+	}
+	
+	public Movie(int id, String name) {
+		super();
+		this.name = name;
+		this.id = id;
+		actors = new ArrayList<Actor>();
 	}
 
 
